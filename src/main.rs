@@ -2,11 +2,10 @@ use anyhow::Result;
 use std::{
     env,
     collections::HashMap,
-    fs::{create_dir, rename},
+    fs::{create_dir, rename, read_dir},
     path::Path,
     process::exit
 };
-use ignore::WalkBuilder;
 
 fn main() -> Result<()> {
 
@@ -37,14 +36,10 @@ fn main() -> Result<()> {
 
     println!("{}", current_directory.to_str().unwrap());
 
-    let walker = WalkBuilder::new(&current_directory)
-        .standard_filters(false)
-        .hidden(false)
-        .build();
     // {"Microservices": ["pdf", epub]}
     let mut files: HashMap<String, Vec<&str>> = HashMap::new();
 
-    for res in walker {
+    for res in read_dir(current_directory)? {
         let entry = match res {
             Ok(e) => e,
             Err(_) => continue
